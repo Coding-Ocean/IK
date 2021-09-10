@@ -1,8 +1,8 @@
-//#define _IK_EXERCISE
+#define _IK_EXERCISE
 //#define _IK_BASIC
 //#define _IK_BASIC_FIXED_ROOT
 //#define _IK_TENTACLE
-#define _IK_CLASS_TENTACLE
+//#define _IK_CLASS_TENTACLE
 
 #ifdef _IK_EXERCISE
 #include"libOne.h"
@@ -342,8 +342,7 @@ public:
     }
 };
 void gmain() {
-    window(900, 600, full);
-    hideCursor();
+    window(900, 600);
     TENTACLE tentacles[2];
     tentacles[0].create(300, 1,       60, height / 2);
     tentacles[1].create(300, 1, width-60, height / 2);
