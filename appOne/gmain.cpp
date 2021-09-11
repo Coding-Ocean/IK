@@ -23,14 +23,13 @@ void gmain() {
 class SEG {
 public:
     VECTOR2 sp, ep;
-    float len=0;
+    float len = 0;
     void follow(const VECTOR2& pos) {
         ep = pos;
         //始点を求める
-        VECTOR2 dir = pos - sp;
-        dir.setMag(len);
-        dir *= -1;
-        sp = pos + dir;
+        VECTOR2 vec = pos - sp;
+        vec.setMag(len);
+        sp = pos + -vec;
     }
     void draw() {
         strokeWeight(6);
@@ -92,14 +91,13 @@ public:
         VECTOR2 vec = pos - sp;
         angle = atan2(vec.y, vec.x);//始点から終点へのangleを求めておく
         vec.setMag(len);
-        vec *= -1;
-        sp = pos + vec;
+        sp = pos + -vec;
     }
     void setPos(const VECTOR2 pos) {
         sp = pos;
         //angleから終点を求める
-        VECTOR2 dir(cos(angle), sin(angle));
-        ep = sp + dir * len;
+        VECTOR2 vec(cos(angle), sin(angle));
+        ep = sp + vec * len;
     }
     void draw() {
         strokeWeight(6);
@@ -123,7 +121,7 @@ void gmain() {
     
     VECTOR2 mouse(center.x,center.y);
 
-    VECTOR2 rootPos = center;
+    VECTOR2 root = center;
     
     while (notQuit) {
         clear();
@@ -141,10 +139,8 @@ void gmain() {
 
         stroke(255);
         for (int i = 0; i < numSegs; i++) {
-            if (i == 0)
-                segs[i].setPos(rootPos);
-            else
-                segs[i].setPos(segs[i - 1].ep);
+            if (i == 0) segs[i].setPos(root);
+            else        segs[i].setPos(segs[i - 1].ep);
             segs[i].draw();
         }
     }
@@ -164,8 +160,7 @@ public:
         VECTOR2 vec = pos - sp;
         angle = atan2(vec.y, vec.x);//始点から終点へのangleを求めておく
         vec.setMag(len);
-        vec *= -1;
-        sp = pos + vec;
+        sp = pos + -vec;
     }
     void setPos(const VECTOR2 pos) {
         sp = pos;
@@ -193,15 +188,15 @@ void gmain() {
 
     VECTOR2 mouse(center.x, center.y);
 
-    VECTOR2 rootPos = center;
+    VECTOR2 root = center;
 
     while (notQuit) {
         clear();
         //追いかける範囲をrootoPosを中心、半径を触手の長さの円の内側に制限
         mouse = VECTOR2(mouseX, mouseY);
-        VECTOR2 v = mouse - rootPos;
-        v.limmit(len * numSegs);
-        VECTOR2 fp = rootPos + v;//follow pos
+        VECTOR2 vec = mouse - root;
+        vec.limmit(len * numSegs);
+        VECTOR2 fp = root + vec;//follow pos
         //末端から根っこに向かって処理
         int i = numSegs - 1;
         segs[i].follow(fp);
@@ -212,10 +207,8 @@ void gmain() {
         //根っこから末端に向かって、位置を再計算して描画
         stroke(255);
         for (int i = 0; i < numSegs; i++) {
-            if (i == 0)
-                segs[i].setPos(rootPos);
-            else
-                segs[i].setPos(segs[i - 1].ep);
+            if (i == 0) segs[i].setPos(root);
+            else        segs[i].setPos(segs[i - 1].ep);
             float thickness = 50;
             strokeWeight((numSegs - i) * thickness / numSegs);
             segs[i].draw();
@@ -234,23 +227,19 @@ public:
     void follow(const VECTOR2& pos) {
         Ep = pos;
         //始点を決める
-        VECTOR2 dir = pos - Sp;
-        Angle = atan2(dir.y, dir.x);
-        dir.setMag(Len);
-        dir *= -1;
-        Sp = pos + dir;
+        VECTOR2 vec = pos - Sp;
+        Angle = atan2(vec.y, vec.x);
+        vec.setMag(Len);
+        Sp = pos + -vec;
     }
     void setPos(const VECTOR2 pos) {
         Sp = pos;
         //Angleを元に終点を求める
-        VECTOR2 dir(cos(Angle), sin(Angle));
-        Ep = Sp + dir * Len;
+        VECTOR2 vec(cos(Angle), sin(Angle));
+        Ep = Sp + vec * Len;
     }
-    void draw(int lineFlag=false) {
-        if(lineFlag)
-            line(Sp.x, Sp.y, Ep.x, Ep.y);
-        else
-            point(Sp.x, Sp.y);
+    void draw() {
+        point(Sp.x, Sp.y);
     }
 };
 class TENTACLE {
@@ -278,9 +267,9 @@ public:
     }
     void follow(const VECTOR2& pos) {
         //末端が追いかける範囲を「rootoPosを中心、半径を触手とする円」の内側に制限
-        VECTOR2 v = pos - RootPos;
-        v.limmit(TentacleLen);
-        VECTOR2 fp = RootPos + v;
+        VECTOR2 vec = pos - RootPos;
+        vec.limmit(TentacleLen);
+        VECTOR2 fp = RootPos + vec;//follow position
         //末端から根っこに向かって処理
         int i = NumSegs - 1;//末端のsegのインデックス
         Segs[i].follow(fp);
@@ -294,10 +283,8 @@ public:
         stroke(Color);
         //根っこから末端に向かって、位置を再計算して描画
         for (int i = 0; i < NumSegs; i++) {
-            if (i == 0)
-                Segs[i].setPos(RootPos);
-            else
-                Segs[i].setPos(Segs[i - 1].Ep);
+            if (i == 0) Segs[i].setPos(RootPos);
+            else        Segs[i].setPos(Segs[i - 1].Ep);
             //描画
             strokeWeight((NumSegs - i) * Thickness / NumSegs);
             Segs[i].draw();
