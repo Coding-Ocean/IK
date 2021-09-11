@@ -199,9 +199,9 @@ void gmain() {
         clear();
         //追いかける範囲をrootoPosを中心、半径を触手の長さの円の内側に制限
         mouse = VECTOR2(mouseX, mouseY);
-        VECTOR2 fp = mouse - rootPos;
-        fp.limmit(len * numSegs);
-        fp += rootPos;//follow pos
+        VECTOR2 v = mouse - rootPos;
+        v.limmit(len * numSegs);
+        VECTOR2 fp = rootPos + v;//follow pos
         //末端から根っこに向かって処理
         int i = numSegs - 1;
         segs[i].follow(fp);
@@ -278,9 +278,9 @@ public:
     }
     void follow(const VECTOR2& pos) {
         //末端が追いかける範囲を「rootoPosを中心、半径を触手とする円」の内側に制限
-        VECTOR2 fp = pos - RootPos;
-        fp.limmit(TentacleLen);
-        fp += RootPos;
+        VECTOR2 v = pos - RootPos;
+        v.limmit(TentacleLen);
+        VECTOR2 fp = RootPos + v;
         //末端から根っこに向かって処理
         int i = NumSegs - 1;//末端のsegのインデックス
         Segs[i].follow(fp);
