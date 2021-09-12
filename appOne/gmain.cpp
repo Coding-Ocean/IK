@@ -62,11 +62,12 @@ void gmain() {
         }
 
         //先端から根元に向かって、終点、始点を決めていく
+        VECTOR2 fp = mouse;//先端のsegはマウスを追う
         int i = numSegs - 1;//先端ののsegのインデックス
-        segs[i].follow(mouse);//先端のsegはマウスを追う
-        while (i > 0) {
+        while (i >= 0) {
+            segs[i].follow(fp);
+            fp = segs[i].sp;
             i--;
-            segs[i].follow(segs[i + 1].sp);
         }
 
         //根元から先端に向かって描画
@@ -119,7 +120,7 @@ void gmain() {
         segs[i].len = 50;
     }
     
-    VECTOR2 mouse(center.x,center.y);
+    VECTOR2 mouse(center.x, center.y);
 
     VECTOR2 root = center;
     
@@ -130,17 +131,17 @@ void gmain() {
             mouse = VECTOR2(mouseX, mouseY);
         }
 
-        int i = numSegs - 1;
-        segs[i].follow(mouse);
-        while (i > 0) {
-            i--;
-            segs[i].follow(segs[i + 1].sp);
+        VECTOR2 fp = mouse;
+        for (int i = numSegs - 1; i >= 0; i--) {
+            segs[i].follow(fp);
+            fp = segs[i].sp;
         }
 
+        VECTOR2 sp = root;
         stroke(255);
         for (int i = 0; i < numSegs; i++) {
-            if (i == 0) segs[i].setPos(root);
-            else        segs[i].setPos(segs[i - 1].ep);
+            segs[i].setPos(sp);
+            sp = segs[i].ep;
             segs[i].draw();
         }
     }
@@ -189,6 +190,8 @@ void gmain() {
     VECTOR2 mouse(center.x, center.y);
 
     VECTOR2 root = center;
+    
+    float thickness = 50;
 
     while (notQuit) {
         clear();
@@ -198,18 +201,16 @@ void gmain() {
         vec.limmit(len * numSegs);
         VECTOR2 fp = root + vec;//follow pos
         //末端から根っこに向かって処理
-        int i = numSegs - 1;
-        segs[i].follow(fp);
-        while (i > 0) {
-            i--;
-            segs[i].follow(segs[i + 1].sp);
+        for (int i = numSegs - 1; i >= 0; i--) {
+            segs[i].follow(fp);
+            fp = segs[i].sp;
         }
         //根っこから末端に向かって、位置を再計算して描画
         stroke(255);
+        VECTOR2 sp = root;
         for (int i = 0; i < numSegs; i++) {
-            if (i == 0) segs[i].setPos(root);
-            else        segs[i].setPos(segs[i - 1].ep);
-            float thickness = 50;
+            segs[i].setPos(sp);
+            sp = segs[i].ep;
             strokeWeight((numSegs - i) * thickness / numSegs);
             segs[i].draw();
         }
@@ -271,22 +272,20 @@ public:
         vec.limmit(TentacleLen);
         VECTOR2 fp = RootPos + vec;//follow position
         //末端から根っこに向かって処理
-        int i = NumSegs - 1;//末端のsegのインデックス
-        Segs[i].follow(fp);
-        while (i > 0) {
-            i--;
-            Segs[i].follow(Segs[i + 1].Sp);
+        for(int i = NumSegs - 1; i>= 0; i--){
+            Segs[i].follow(fp);
+            fp = Segs[i].Sp;
         }
     }
     void draw() {
-        colorMode(RGB);
-        stroke(Color);
         //根っこから末端に向かって、位置を再計算して描画
+        VECTOR2 sp = RootPos;
         for (int i = 0; i < NumSegs; i++) {
-            if (i == 0) Segs[i].setPos(RootPos);
-            else        Segs[i].setPos(Segs[i - 1].Ep);
+            Segs[i].setPos(sp);
+            sp = Segs[i].Ep;
             //描画
             strokeWeight((NumSegs - i) * Thickness / NumSegs);
+            stroke(3.14f/NumSegs*i, 255, 255);
             Segs[i].draw();
         }
     }
